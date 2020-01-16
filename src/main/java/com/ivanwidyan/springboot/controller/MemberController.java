@@ -1,7 +1,6 @@
 package com.ivanwidyan.springboot.controller;
 
 import com.ivanwidyan.springboot.exception.ResourceNotFoundException;
-import com.ivanwidyan.springboot.model.Employee;
 import com.ivanwidyan.springboot.model.Member;
 import com.ivanwidyan.springboot.repository.MemberRepository;
 import io.swagger.annotations.Api;
@@ -34,7 +33,7 @@ public class MemberController {
             throws ResourceNotFoundException {
 
         Member employee = memberRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Employee not found for this id :: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Member not found for this id :: " + id));
         return ResponseEntity.ok().body(employee);
     }
 }
