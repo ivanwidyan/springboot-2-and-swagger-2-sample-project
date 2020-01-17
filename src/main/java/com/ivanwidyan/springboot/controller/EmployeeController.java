@@ -1,6 +1,6 @@
 package com.ivanwidyan.springboot.controller;
 
-import com.ivanwidyan.springboot.exception.ResourceNotFoundException;
+import com.ivanwidyan.springboot.exception.BadRequestException;
 import com.ivanwidyan.springboot.model.Employee;
 import com.ivanwidyan.springboot.repository.EmployeeRepository;
 import io.swagger.annotations.*;
@@ -38,10 +38,10 @@ public class EmployeeController {
     @GetMapping("/employees/{id}")
     public ResponseEntity < Employee > getEmployeeById(
             @ApiParam(value = "Employee id from which employee object will retrieve", required = true) @PathVariable(value = "id") Long employeeId)
-            throws ResourceNotFoundException {
+            throws BadRequestException {
 
         Employee employee = employeeRepository.findById(employeeId)
-                .orElseThrow(() -> new ResourceNotFoundException("Employee not found for this id :: " + employeeId));
+                .orElseThrow(() -> new BadRequestException("Employee not found for this id :: " + employeeId));
         return ResponseEntity.ok().body(employee);
     }
 
@@ -56,10 +56,10 @@ public class EmployeeController {
     @PutMapping("/employees/{id}")
     public ResponseEntity < Employee > updateEmployee(
             @ApiParam(value = "Employee Id to update employee object", required = true) @PathVariable(value = "id") Long employeeId,
-            @ApiParam(value = "Update employee object", required = true) @Valid @RequestBody Employee employeeDetails) throws ResourceNotFoundException {
+            @ApiParam(value = "Update employee object", required = true) @Valid @RequestBody Employee employeeDetails) throws BadRequestException {
 
         Employee employee = employeeRepository.findById(employeeId)
-                .orElseThrow(() -> new ResourceNotFoundException("Employee not found for this id :: " + employeeId));
+                .orElseThrow(() -> new BadRequestException("Employee not found for this id :: " + employeeId));
         employee.setEmailId(employeeDetails.getEmailId());
         employee.setLastName(employeeDetails.getLastName());
         employee.setFirstName(employeeDetails.getFirstName());
@@ -71,10 +71,10 @@ public class EmployeeController {
     @DeleteMapping("/employees/{id}")
     public Map < String, Boolean > deleteEmployee(
             @ApiParam(value = "Employee Id from which employee object will delete from database table", required = true) @PathVariable(value = "id") Long employeeId)
-            throws ResourceNotFoundException {
+            throws BadRequestException {
 
         Employee employee = employeeRepository.findById(employeeId)
-                .orElseThrow(() -> new ResourceNotFoundException("Employee not found for this id :: " + employeeId));
+                .orElseThrow(() -> new BadRequestException("Employee not found for this id :: " + employeeId));
         employeeRepository.delete(employee);
         Map < String, Boolean > response = new HashMap < > ();
         response.put("deleted", Boolean.TRUE);

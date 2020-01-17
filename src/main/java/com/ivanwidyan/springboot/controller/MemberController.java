@@ -1,7 +1,6 @@
 package com.ivanwidyan.springboot.controller;
 
-import com.ivanwidyan.springboot.exception.IncorrectFieldException;
-import com.ivanwidyan.springboot.exception.ResourceNotFoundException;
+import com.ivanwidyan.springboot.exception.BadRequestException;
 import com.ivanwidyan.springboot.model.Member;
 import com.ivanwidyan.springboot.repository.MemberRepository;
 import io.swagger.annotations.*;
@@ -23,86 +22,110 @@ public class MemberController {
     @Autowired
     private MemberRepository memberRepository;
 
-    @ApiOperation(value = "Get all member data")
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Successfully retrieved list"),
-            @ApiResponse(code = 401, message = "You are not authorized to view the resource"),
-            @ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
-            @ApiResponse(code = 404, message = "The resource you were trying to reach is not found"),
-            @ApiResponse(code = 500, message = "Incorrect input on the data being send")
-    })
-    @GetMapping("/get/allmember")
+    @ApiOperation(value = "Get All Members")
+    @GetMapping(path = "/allmember", produces="application/json")
     public List<Member> getAllMembers() {
         return memberRepository.findAll();
     }
 
-    @ApiOperation(value = "Get a member by Id")
-    @GetMapping("/get/member")
+    @ApiOperation(value = "Get Member by Id")
+    @GetMapping(path = "/members", produces="application/json")
     public ResponseEntity<Member> getMemberById(
-            @ApiParam(value = "Member id from which member object will retrieve", required = true) @RequestParam Long id)
-            throws ResourceNotFoundException {
+            @ApiParam(required = true) @RequestParam Integer id)
+            throws Exception {
 
-        Member employee = memberRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Member not found for this id :: " + id));
-        return ResponseEntity.ok().body(employee);
+        Member member = memberRepository.findById(id);
+        if (member == null) throw new BadRequestException("id not found");
+        idValidator(id);
+        return ResponseEntity.ok().body(member);
     }
 
-    @ApiOperation(value = "Add a member")
-    @PostMapping("/register/member")
+    @ApiOperation(value = "Create Member")
+    @PostMapping(path = "/member", produces="application/json", consumes="application/json")
     public Member createMember(
-            @ApiParam(value = "Save member data to the database", required = true) @Valid @RequestBody Member memberDetails)
-        throws Exception{
+            @ApiParam(required = true) @Valid @RequestBody Member memberDetails)
+            throws Exception {
 
-        Member member = memberRepository.findById(memberDetails.getId()).orElse(null);
+        idValidator(memberDetails.getId());
+        Member member = memberRepository.findById(memberDetails.getId());
+        if (member != null) throw new BadRequestException("id already exist");
 
-        if(member != null)
-            throw new IncorrectFieldException("Member with id "+ memberDetails.getId() + " already exist");
-
-        fieldValidator(memberDetails);
+        nameValidator(memberDetails.getName());
+        emailValidator(memberDetails.getEmail());
+        phoneNumberValidator(memberDetails.getPhoneNumber());
 
         return memberRepository.save(memberDetails);
     }
 
-    @ApiOperation(value = "Update a member")
-    @PutMapping("/update/member")
+    @ApiOperation(value = "Update member")
+    @PutMapping(path = "/member", produces="application/json", consumes="application/json")
     public ResponseEntity<Member> updateMember(
-            @ApiParam(value = "Member Id used to update specific member", required = true) @RequestParam Long id,
-            @ApiParam(value = "Data for the updated member", required = true) @Valid @RequestBody Member memberDetails)
+            @ApiParam(required = true) @RequestParam Integer id,
+            @ApiParam(required = true) @Valid @RequestBody Member memberDetails)
             throws Exception {
 
-        Member member = memberRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Member not found for this id: " + id));
+        idValidator(id);
+        Member existingMember = memberRepository.findById(id);
+        if (existingMember == null) throw new BadRequestException("id not found");
 
-        fieldValidator(memberDetails);
+        idValidator(memberDetails.getId());
+        Member wannabeMember = memberRepository.findById(memberDetails.getId());
+        if (wannabeMember != null) throw new BadRequestException("id already exist");
 
-        member.setName(memberDetails.getName());
-        member.setEmail(memberDetails.getEmail());
-        member.setPhoneNumber(memberDetails.getPhoneNumber());
-        final Member updatedMember = memberRepository.save(member);
-        return ResponseEntity.ok(member);
+        nameValidator(memberDetails.getName());
+        emailValidator(memberDetails.getEmail());
+        phoneNumberValidator(memberDetails.getPhoneNumber());
+
+        existingMember.setName(memberDetails.getName());
+        existingMember.setEmail(memberDetails.getEmail());
+        existingMember.setPhoneNumber(memberDetails.getPhoneNumber());
+        final Member updatedMember = memberRepository.save(wannabeMember);
+        return ResponseEntity.ok(updatedMember);
     }
 
-    @ApiOperation(value = "Delete a member")
-    @DeleteMapping("/delete/member")
+    @ApiOperation(value = "Delete member")
+    @DeleteMapping("/member")
     public Map<String, Boolean> deleteMember(
-            @ApiParam(value = "Member id used to delete specific member", required = true) @RequestParam Long id)
-            throws ResourceNotFoundException {
+            @ApiParam(required = true) @RequestParam Integer id)
+            throws Exception {
 
-        Member member = memberRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Member not found for this id: " + id));
+        idValidator(id);
+        Member member = memberRepository.findById(id);
+        if (member == null) throw new BadRequestException("id not found");
+
         memberRepository.delete(member);
         Map<String, Boolean> response = new HashMap<>();
         response.put("deleted", true);
         return  response;
     }
 
-    private void fieldValidator(Member memberDetails) throws Exception {
-        if(memberDetails.getName().isEmpty())
-            throw new IncorrectFieldException("Name cannot be empty");
-        else if(memberDetails.getEmail().isEmpty())
-            throw new IncorrectFieldException("Name cannot be empty");
-        else if(memberDetails.getPhoneNumber().isEmpty())
-            throw new IncorrectFieldException("Name cannot be empty");
+    private void idValidator(Integer id) throws Exception {
+        if (id == null)
+            throw new BadRequestException("id is null");
+        if (id > 999999) {
+            throw new BadRequestException("id is too large");
+        } else if (id < 1) {
+            throw new BadRequestException("id is too small");
+        }
+    }
+
+    private void nameValidator(String name) throws Exception {
+        if (name.isEmpty())
+            throw new BadRequestException("name is blank");
+        else if (name == null)
+            throw new BadRequestException("name is null");
+
+        final String phoneRegex = "^[a-zA-Z ]*$";
+        Pattern pattern = Pattern.compile(phoneRegex);
+        if (!pattern.matcher(name).matches())
+            throw new BadRequestException("name format is invalid");
+    }
+
+    private void emailValidator(String email) throws Exception {
+        if (email.isEmpty())
+            throw new BadRequestException("email is blank");
+        else if (email == null)
+            throw new BadRequestException("email is null");
 
         final String emailRegex ="^[a-zA-Z0-9_+&*-]+(?:\\."+
                 "[a-zA-Z0-9_+&*-]+)*@" +
@@ -111,15 +134,20 @@ public class MemberController {
 
         Pattern pattern = Pattern.compile(emailRegex);
 
-        if(!pattern.matcher(memberDetails.getEmail()).matches())
-            throw new IncorrectFieldException("Email format is invalid: " + memberDetails.getEmail());
+        if (!pattern.matcher(email).matches())
+            throw new BadRequestException("email format is invalid");
 
-        final String phoneRegex = "^[a-zA-Z]*$";
-
-        pattern = Pattern.compile(phoneRegex);
-
-        if(pattern.matcher(memberDetails.getPhoneNumber()).matches())
-            throw new IncorrectFieldException("Phone Number must not contains alphabet: " + memberDetails.getPhoneNumber());
     }
 
+    private void phoneNumberValidator(String phoneNumber) throws Exception {
+        if (phoneNumber.isEmpty())
+            throw new BadRequestException("phoneNumber is blank");
+        else if (phoneNumber == null)
+            throw new BadRequestException("phoneNumber is null");
+        final String phoneRegex = "^[0-9]*$";
+        Pattern pattern = Pattern.compile(phoneRegex);
+
+        if (!pattern.matcher(phoneNumber).matches())
+            throw new BadRequestException("phone number format is invalid");
+    }
 }

@@ -12,7 +12,7 @@ import javax.validation.constraints.NotEmpty;
 public class Member {
 
     @ApiModelProperty
-    private Long id;
+    private Integer id;
 
     @ApiModelProperty
     private String name;
@@ -25,11 +25,11 @@ public class Member {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
