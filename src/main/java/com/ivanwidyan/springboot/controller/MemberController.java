@@ -29,14 +29,14 @@ public class MemberController {
     private MemberRepository memberRepository;
 
     @ApiOperation(value = "Get All Members")
-    @GetMapping(path = "/allmember", produces="application/json")
+    @GetMapping(path = "/members", produces="application/json")
     public ResponseEntity<GetListMemberWebResponse> getAllMembers()
             throws Exception {
         return new ResponseEntity<>(new GetListMemberWebResponse(memberRepository.findAll()), HttpStatus.OK);
     }
 
     @ApiOperation(value = "Get Member by Id")
-    @GetMapping(path = "/members", produces="application/json")
+    @GetMapping(path = "/member", produces="application/json")
     public ResponseEntity<GetMemberWebResponse> getMemberById(
             @ApiParam(required = true) @RequestParam Integer id)
             throws Exception {

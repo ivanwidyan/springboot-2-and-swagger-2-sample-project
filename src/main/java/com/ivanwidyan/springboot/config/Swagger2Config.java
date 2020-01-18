@@ -28,7 +28,7 @@ public class Swagger2Config {
     }
 
     private ApiInfo apiEndPointsInfo() {
-        return new ApiInfoBuilder().title("BLIBLI SWAGGER PLUGIN")
+        return new ApiInfoBuilder().title("Spring Boot 2 REST API")
                 .description("Member Management REST API")
                 .contact(new Contact("Ivan Widyan", "https://github.com/ivanwidyan", "ivanrwidyan@gmail.com"))
                 .license("Apache 2.0")
