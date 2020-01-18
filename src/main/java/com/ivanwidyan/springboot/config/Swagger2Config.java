@@ -17,7 +17,10 @@ public class Swagger2Config {
 
     @Bean
     public Docket api() {
-        return new Docket(DocumentationType.SWAGGER_2).select()
+
+        return new Docket(DocumentationType.SWAGGER_2)
+                .useDefaultResponseMessages(false)
+                .select()
                 .apis(RequestHandlerSelectors
                         .basePackage("com.ivanwidyan.springboot.controller"))
                 .paths(PathSelectors.regex("/.*"))
@@ -25,9 +28,9 @@ public class Swagger2Config {
     }
 
     private ApiInfo apiEndPointsInfo() {
-        return new ApiInfoBuilder().title("Spring Boot REST API")
-                .description("Employee Management REST API")
-                .contact(new Contact("Ivan Widyan", "www.ivanwidyan.com", "ivanrwidyan@gmail.com"))
+        return new ApiInfoBuilder().title("Spring Boot 2 REST API")
+                .description("Member Management REST API")
+                .contact(new Contact("Ivan Widyan", "https://github.com/ivanwidyan", "ivanrwidyan@gmail.com"))
                 .license("Apache 2.0")
                 .licenseUrl("http://www.apache.org/licenses/LICENSE-2.0.html")
                 .version("1.0.0")
