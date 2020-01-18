@@ -1,10 +1,9 @@
-package com.ivanwidyan.springboot.model;
+package com.ivanwidyan.springboot.entity;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotEmpty;
 
 @Entity
 @Table(name = "members")
@@ -57,6 +56,14 @@ public class Member {
     }
 
     public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    public Member () {}
+
+    public Member (String name, String email, String phoneNumber) {
+        this.name = name;
+        this.email = email;
         this.phoneNumber = phoneNumber;
     }
 
