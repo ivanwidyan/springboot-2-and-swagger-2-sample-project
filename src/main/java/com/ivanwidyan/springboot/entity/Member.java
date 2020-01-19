@@ -4,10 +4,12 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 import javax.persistence.*;
+import javax.xml.bind.annotation.XmlRootElement;
 
 @Entity
 @Table(name = "members")
 @ApiModel(description = "Data of members")
+@XmlRootElement
 public class Member {
 
     @ApiModelProperty

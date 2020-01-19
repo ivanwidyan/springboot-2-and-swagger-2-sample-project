@@ -19,6 +19,8 @@ To run the jar:
 java -jar target/springboot-sample-project-0.0.1-SNAPSHOT.jar
 ```
 
+To open the swagger you can go to [http://localhost:17001/swagger-ui.html](http://localhost:17001/swagger-ui.html)
+
 ## Endpoints
 
 These are the list of APIs available in this sample application.

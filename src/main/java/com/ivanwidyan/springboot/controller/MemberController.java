@@ -2,11 +2,8 @@ package com.ivanwidyan.springboot.controller;
 
 import com.ivanwidyan.springboot.exception.BadRequestException;
 import com.ivanwidyan.springboot.entity.Member;
-import com.ivanwidyan.springboot.exception.InternalServerErrorBody;
 import com.ivanwidyan.springboot.model.request.CreateMemberWebRequest;
-import com.ivanwidyan.springboot.model.response.BooleanWebResponse;
-import com.ivanwidyan.springboot.model.response.GetListMemberWebResponse;
-import com.ivanwidyan.springboot.model.response.GetMemberWebResponse;
+import com.ivanwidyan.springboot.plugin.Response;
 import com.ivanwidyan.springboot.repository.MemberRepository;
 import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,9 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.regex.Pattern;
 
 @RestController
@@ -30,22 +25,22 @@ public class MemberController {
 
     @ApiOperation(value = "Get All Members")
     @GetMapping(path = "/members", produces="application/json")
-    public ResponseEntity<GetListMemberWebResponse> getAllMembers()
+    public Response<List<Member>> getAllMembers()
             throws Exception {
-        return new ResponseEntity<>(new GetListMemberWebResponse(memberRepository.findAll()), HttpStatus.OK);
+        return new Response<>(memberRepository.findAll());
     }
 
     @ApiOperation(value = "Get Member by Id")
     @GetMapping(path = "/member", produces="application/json")
-    public ResponseEntity<GetMemberWebResponse> getMemberById(
+    public Response<Member> getMemberById(
             @ApiParam(required = true) @RequestParam Integer id)
             throws Exception {
-        return new ResponseEntity<>(new GetMemberWebResponse(idValidator(id)), HttpStatus.OK);
+        return new Response<Member>(idValidator(id));
     }
 
     @ApiOperation(value = "Create Member")
     @PostMapping(path = "/member", produces="application/json", consumes="application/json")
-    public ResponseEntity<GetMemberWebResponse> createMember(
+    public Response<Member> createMember(
             @ApiParam(required = true) @Valid @RequestBody CreateMemberWebRequest request)
             throws Exception {
 
@@ -54,12 +49,12 @@ public class MemberController {
         phoneNumberValidator(request.getPhoneNumber());
 
         Member member = new Member(request.getName(), request.getEmail(), request.getPhoneNumber());
-        return new ResponseEntity<>(new GetMemberWebResponse(memberRepository.save(member)), HttpStatus.OK);
+        return new Response<Member>(memberRepository.save(member));
     }
 
     @ApiOperation(value = "Update Member")
     @PutMapping(path = "/member", produces="application/json", consumes="application/json")
-    public ResponseEntity<GetMemberWebResponse> updateMember(
+    public Response<Member> updateMember(
             @ApiParam(required = true) @RequestParam Integer id,
             @ApiParam(required = true) @Valid @RequestBody CreateMemberWebRequest request)
             throws Exception {
@@ -73,17 +68,17 @@ public class MemberController {
         member.setName(request.getName());
         member.setEmail(request.getEmail());
         member.setPhoneNumber(request.getPhoneNumber());
-        return new ResponseEntity<>(new GetMemberWebResponse(memberRepository.save(member)), HttpStatus.OK);
+        return new Response<Member>(memberRepository.save(member));
     }
 
     @ApiOperation(value = "Delete Member")
     @DeleteMapping(path = "/member", produces="application/json")
-    public ResponseEntity<BooleanWebResponse> deleteMember(
+    public Response<Boolean> deleteMember(
             @ApiParam(required = true) @RequestParam Integer id)
             throws Exception {
 
         memberRepository.delete(idValidator(id));
-        return new ResponseEntity<>(new BooleanWebResponse(true), HttpStatus.OK);
+        return new Response<>(true);
     }
 
     private Member idValidator(Integer id) throws Exception {
@@ -100,6 +95,8 @@ public class MemberController {
             throw new BadRequestException("name is blank");
         else if (name == null)
             throw new BadRequestException("name is null");
+        if (name.length() > 100)
+            throw new BadRequestException("name is too long");
 
         final String phoneRegex = "^[a-zA-Z ]*$";
         Pattern pattern = Pattern.compile(phoneRegex);
