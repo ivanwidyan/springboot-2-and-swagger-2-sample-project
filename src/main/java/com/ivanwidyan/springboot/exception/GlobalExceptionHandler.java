@@ -10,15 +10,15 @@ import org.springframework.web.context.request.WebRequest;
 public class GlobalExceptionHandler {
     @ExceptionHandler(BadRequestException.class)
     public ResponseEntity<?> badRequestExceptionHandler(BadRequestException ex, WebRequest request) {
-        BadRequestBody response = new BadRequestBody(HttpStatus.BAD_REQUEST.value(),
-                HttpStatus.BAD_REQUEST.getReasonPhrase(), ex.getMessage());
+        BadRequestBody response = new BadRequestBody(
+                HttpStatus.BAD_REQUEST.value(), "BAD_REQUEST", ex.getMessage());
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<?> internalServerExceptionHandler(Exception ex, WebRequest request) {
-        InternalServerErrorBody response = new InternalServerErrorBody(HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase());
+        InternalServerErrorBody response = new InternalServerErrorBody(
+                HttpStatus.INTERNAL_SERVER_ERROR.value(), "INTERNAL_SERVER_ERROR");
         return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
