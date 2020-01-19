@@ -91,11 +91,11 @@ public class MemberController {
     }
 
     private void nameValidator(String name) throws Exception {
-        if (name.isEmpty())
-            throw new BadRequestException("name is blank");
-        else if (name == null)
+        if (name == null)
             throw new BadRequestException("name is null");
-        if (name.length() > 100)
+        else if (name.isEmpty())
+            throw new BadRequestException("name is blank");
+        else if (name.length() > 100)
             throw new BadRequestException("name is too long");
 
         final String phoneRegex = "^[a-zA-Z ]*$";
@@ -105,10 +105,10 @@ public class MemberController {
     }
 
     private void emailValidator(String email) throws Exception {
-        if (email.isEmpty())
-            throw new BadRequestException("email is blank");
-        else if (email == null)
+        if (email == null)
             throw new BadRequestException("email is null");
+        else if (email.isEmpty())
+            throw new BadRequestException("email is blank");
 
         final String emailRegex ="^[a-zA-Z0-9_+&*-]+(?:\\."+
                 "[a-zA-Z0-9_+&*-]+)*@" +
@@ -124,11 +124,11 @@ public class MemberController {
     }
 
     private void phoneNumberValidator(String phoneNumber) throws Exception {
-        if (phoneNumber.isEmpty())
-            throw new BadRequestException("phoneNumber is blank");
-        else if (phoneNumber == null)
+        if (phoneNumber == null)
             throw new BadRequestException("phoneNumber is null");
-        if (phoneNumber.length() > 13)
+        else if (phoneNumber.isEmpty())
+            throw new BadRequestException("phoneNumber is blank");
+        else if (phoneNumber.length() > 13)
             throw new BadRequestException("phoneNumber is too long");
 
         final String phoneRegex = "^[0-9]*$";
