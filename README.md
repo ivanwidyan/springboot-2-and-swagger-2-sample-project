@@ -1,5 +1,7 @@
 # Spring Boot 2 and Swagger 2 Sample Project
 
+[![CircleCI](https://circleci.com/gh/ivanwidyan/springboot-2-and-swagger-2-sample-project.svg?style=svg)](https://circleci.com/gh/ivanwidyan/springboot-2-and-swagger-2-sample-project)
+
 This is an example Spring boot 2 with REST, JPA, and Swagger 2. The swagger is handled by
 [Springfox](http://springfox.io) which is a library for enabling swagger.
 
