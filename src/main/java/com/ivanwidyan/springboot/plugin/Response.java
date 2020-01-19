@@ -1,14 +1,17 @@
-package com.ivanwidyan.springboot.model.response;
+package com.ivanwidyan.springboot.plugin;
 
 import com.ivanwidyan.springboot.entity.Member;
 import org.springframework.http.HttpStatus;
 
-public class GetMemberWebResponse {
+import javax.xml.bind.annotation.XmlRootElement;
+
+@XmlRootElement
+public class Response<T> {
     private Integer code;
     private String status;
-    private Member data;
+    private T data;
 
-    public GetMemberWebResponse(Member data) {
+    public Response(T data) {
         this.code = HttpStatus.OK.value();
         this.status = HttpStatus.OK.getReasonPhrase();
         this.data = data;
@@ -22,7 +25,7 @@ public class GetMemberWebResponse {
         return status;
     }
 
-    public Member getData() {
+    public T getData() {
         return data;
     }
 }
