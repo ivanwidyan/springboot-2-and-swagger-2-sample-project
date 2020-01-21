@@ -62,8 +62,8 @@ public class MemberController {
         Member member = idValidator(id);
 
         nameValidator(request.getName());
-        emailValidator(request.getEmail());
-        phoneNumberValidator(request.getPhoneNumber());
+        emailValidator(id, request.getEmail());
+        phoneNumberValidator(id, request.getPhoneNumber());
 
         member.setName(request.getName());
         member.setEmail(request.getEmail());
@@ -104,7 +104,11 @@ public class MemberController {
             throw new BadRequestException("name format is invalid");
     }
 
-    private void emailValidator(String email) throws Exception {
+    private void emailValidator(String email) throws  Exception {
+        emailValidator(-1, email);
+    }
+
+    private void emailValidator(Integer id, String email) throws Exception {
         if (email == null)
             throw new BadRequestException("email is null");
         else if (email.isEmpty())
@@ -120,10 +124,16 @@ public class MemberController {
             throw new BadRequestException("email format is invalid");
 
         Member member = memberRepository.findByEmail(email);
-        if (member != null) throw new BadRequestException("email already exist");
+        if (member != null)
+            if (member.getId() != id)
+                throw new BadRequestException("email already exist");
     }
 
     private void phoneNumberValidator(String phoneNumber) throws Exception {
+        phoneNumberValidator(-1, phoneNumber);
+    }
+
+    private void phoneNumberValidator(Integer id, String phoneNumber) throws Exception {
         if (phoneNumber == null)
             throw new BadRequestException("phoneNumber is null");
         else if (phoneNumber.isEmpty())
@@ -138,6 +148,8 @@ public class MemberController {
             throw new BadRequestException("phone number format is invalid");
 
         Member member = memberRepository.findByPhoneNumber(phoneNumber);
-        if (member != null) throw new BadRequestException("phoneNumber already exist");
+        if (member != null)
+            if (member.getId() != id)
+                throw new BadRequestException("phoneNumber already exist");
     }
 }
