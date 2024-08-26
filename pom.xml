@@ -16,7 +16,7 @@
 
 	<properties>
 		<java.version>1.8</java.version>
-		<springfox.version>2.8.0</springfox.version> <!-- Use 2.7.0 to use Swagger 1 looks -->
+		<springfox.version>2.10.0</springfox.version> <!-- Use 2.7.0 to use Swagger 1 looks -->
 	</properties>
 
 	<dependencies>
